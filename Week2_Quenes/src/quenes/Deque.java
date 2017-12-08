@@ -31,8 +31,7 @@ public class Deque<Item> implements Iterable<Item> {
     if (item == null) {
       throw new IllegalArgumentException();
     }
-    Node<Item> oldfirst = new Node<Item>();
-    oldfirst = first;
+    Node<Item> oldfirst = first;
     first = new Node<Item>();
     first.item = item;
     first.next = null;
@@ -50,8 +49,7 @@ public class Deque<Item> implements Iterable<Item> {
     if (item == null) {
       throw new IllegalArgumentException();
     }
-    Node<Item> oldlast = new Node<Item>();
-    oldlast = last;
+    Node<Item> oldlast = last;
     last = new Node<Item>();
     last.item = item;
     last.next = null;
