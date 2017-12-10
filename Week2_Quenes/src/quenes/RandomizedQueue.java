@@ -47,6 +47,9 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     Item item = items[randomIndex];
     items[randomIndex] = items[--n];
     items[n] = null;
+    if (n > 0 && n == items.length / 4) {
+      resize(items.length / 2);
+    }
     return item;
   }
 
@@ -62,15 +65,20 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
   }
 
   private class ListIterator implements Iterator<Item> {
-    private int i;
+    private int current;
+    int[] copyItems;
 
     public ListIterator() {
-      StdRandom.shuffle(items, 0, n);
-      i = n - 1;
+      this.copyItems = new int[n];
+      for (int i = 0; i < n; i++) {
+        copyItems[i] = i;
+      }
+      StdRandom.shuffle(copyItems);
+      current = n - 1;
     }
 
     public boolean hasNext() {
-      return i >= 0;
+      return current >= 0;
     }
 
     public void remove() {
@@ -81,7 +89,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
       if (!hasNext()) {
         throw new NoSuchElementException();
       }
-      return items[i--];
+      return items[copyItems[current--]];
     }
 
   }
@@ -106,13 +114,16 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     }
     System.out.println();
     System.out.println(deque.dequeue());
+    System.out.println(deque.dequeue());
+    System.out.println(deque.dequeue());
+    System.out.println(deque.dequeue());
+    System.out.println(deque.dequeue());
     for (Object item: deque) {
       System.out.print(item);
     }
     System.out.println();
     System.out.println(deque.dequeue());
     System.out.println(deque.size());
-      System.out.print(deque);
     for (Object item: deque) {
       System.out.print(item + " ");
     }
