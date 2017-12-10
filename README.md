@@ -4,7 +4,7 @@ This course covers the essential information that every serious programmer needs
 
 ## Check-list
 * week 1: Percolation - ***100***
-* week 2:
+* week 2: Quenes      - ***91***    Need improve!
 * week 3:
 * week 4:
 * week 5:
