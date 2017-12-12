@@ -1,23 +1,27 @@
 package primarysorts;
 
 import edu.princeton.cs.algs4.StdOut;
-import edu.princeton.cs.algs4.StdRandom;
 
-public class Selection {
+public class Shell {
   public static void sort(Comparable[] a) {
-    int N = a.length;
-    for (int i = 0; i < N; i++) {
-      int min = i;
-      for (int j = i + 1; j < N; j++) {
-        if (less(a[j], a[min])) {
-          min = j;
+    int n = a.length;
+    int h = 1;
+    while (h < n / 3) {
+      h = 3 * h + 1;
+    }
+    while (h > 1) {
+      for (int i = 0; i < n; i++) {
+        for (int j = i + h; j < n; j += h) {
+          if (less(a[j], a[j - h])) {
+            exch(a, j, j - h);
+          }
         }
       }
-      exch(a, i, min);
+      h /= 3;
     }
   }
 
-  private static boolean less(Comparable v, Comparable w) {
+  private static boolean less (Comparable v, Comparable w) {
     return v.compareTo(w) < 0;
   }
 
@@ -42,14 +46,4 @@ public class Selection {
     }
     return true;
   }
-
-  public static void main(String[] args) {
-    Double[] randomArray = new Double[1000];
-    for (int i = 0; i < randomArray.length; i++ ) {
-      randomArray[i] = StdRandom.uniform();
-    }
-    sort(randomArray);
-    show(randomArray);
-  }
 }
-
