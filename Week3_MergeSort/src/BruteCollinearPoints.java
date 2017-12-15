@@ -2,10 +2,11 @@ import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.StdDraw;
 import edu.princeton.cs.algs4.In;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class BruteCollinearPoints {
-  private HashMap<Point, Point> collinearPoints = new HashMap<>();
+  private ArrayList<LineSegment> collinearPoints = new ArrayList<>();
   private  int numberOfSegments;
 
   public BruteCollinearPoints(Point[] points) {
@@ -27,6 +28,7 @@ public class BruteCollinearPoints {
     numberOfSegments = 0;
     Point lowest;
     Point highest;
+    Arrays.sort(points);
     for (Point p1 : points) {
       lowest = p1;
       for (Point p2 : points) {
@@ -44,11 +46,7 @@ public class BruteCollinearPoints {
                       if (higher(p4, highest)) {
                         highest = p4;
                       }
-                      if (!collinearPoints.containsKey(lowest)
-                          || collinearPoints.get(lowest) != highest) {
-                        collinearPoints.put(lowest, highest);
-                        numberOfSegments++;
-                      }
+                      collinearPoints.add(new LineSegment(lowest, highest));
                     }
                   }
                 }
@@ -69,12 +67,8 @@ public class BruteCollinearPoints {
   }
 
   public LineSegment[] segments() {
-    LineSegment[] segments;
-    segments = new LineSegment[numberOfSegments];
-    int i = 0;
-    for (Point p : collinearPoints.keySet()) {
-      segments[i++] = new LineSegment(p, collinearPoints.get(p));
-    }
+    LineSegment[] segments = new LineSegment[collinearPoints.size()];
+    collinearPoints.toArray(segments);
     return segments;
   }
 
