@@ -5,7 +5,7 @@ This course covers the essential information that every serious programmer needs
 ## Check-list
 * week 1: Percolation - ***100***
 * week 2: Quenes      - ***100***
-* week 3:
+* week 3: Collinear   - ***99*** warning: data type mutated the points[] array
 * week 4:
 * week 5:
 * week 6:

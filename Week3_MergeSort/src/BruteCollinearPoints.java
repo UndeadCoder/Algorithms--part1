@@ -6,9 +6,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class BruteCollinearPoints {
-  private ArrayList<LineSegment> collinearPoints = new ArrayList<>();
-  private  int numberOfSegments;
-
+  private final ArrayList<LineSegment> segmentsList = new ArrayList<>();
+  
   public BruteCollinearPoints(Point[] points) {
     if (points == null) {
       throw new IllegalArgumentException();
@@ -19,38 +18,24 @@ public class BruteCollinearPoints {
       }
     }
     for (int i = 0; i < points.length; i++) {
-      for (int j = i + 1; j < points.length; j++) {
-        if (points[j] == points[i]) {
+      for (int j = 0; j < points.length; j++) {
+        if (i != j && points[j].compareTo(points[i]) == 0) {
           throw new IllegalArgumentException();
         }
       }
     }
-    numberOfSegments = 0;
+    Point[] pointsCopy = Arrays.copyOf(points, points.length);
+    Arrays.sort(pointsCopy);
     Point lowest;
     Point highest;
     Arrays.sort(points);
-    for (Point p1 : points) {
-      lowest = p1;
-      for (Point p2 : points) {
-        if (!higher(lowest, p2) && p2.compareTo(p1) != 0) {
-          highest = p2;
-          for (Point p3 : points) {
-            if (!higher(lowest, p3) && p3.compareTo(p2) != 0) {
-              if (Math.abs(lowest.slopeTo(p3)) == Math.abs(highest.slopeTo(p3))) {
-                if (higher(p3, highest)) {
-                  highest = p3;
-                }
-                for (Point p4 : points) {
-                  if (!higher(lowest, p4) && p4.compareTo(p3) != 0 && p4.compareTo(p2) != 0) {
-                    if (Math.abs(lowest.slopeTo(p4)) == Math.abs(highest.slopeTo(p4))) {
-                      if (higher(p4, highest)) {
-                        highest = p4;
-                      }
-                      collinearPoints.add(new LineSegment(lowest, highest));
-                    }
-                  }
-                }
-              }
+    for (int p = 0; p < pointsCopy.length - 3; p++) {
+      for (int q = p + 1; q < pointsCopy.length - 2; q++) {
+        for (int r = q + 1; r < pointsCopy.length - 1; r++) {
+          for (int s = r + 1; s < pointsCopy.length; s++) {
+            if (pointsCopy[p].slopeTo(pointsCopy[q]) == pointsCopy[p].slopeTo(pointsCopy[r]) &&
+              pointsCopy[p].slopeTo(pointsCopy[q]) == pointsCopy[p].slopeTo(pointsCopy[s])) {
+              segmentsList.add(new LineSegment(pointsCopy[p], pointsCopy[s]));
             }
           }
         }
@@ -63,13 +48,12 @@ public class BruteCollinearPoints {
   }
 
   public int numberOfSegments() {
-    return numberOfSegments;
+    return segmentsList.size();
   }
 
   public LineSegment[] segments() {
-    LineSegment[] segments = new LineSegment[collinearPoints.size()];
-    collinearPoints.toArray(segments);
-    return segments;
+    LineSegment[] segments = new LineSegment[segmentsList.size()];
+    return segmentsList.toArray(segments);
   }
 
   public static void main(String[] args) {

@@ -1,31 +1,36 @@
-import edu.princeton.cs.algs4.StdOut;
-import edu.princeton.cs.algs4.StdDraw;
 import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.StdDraw;
+import edu.princeton.cs.algs4.StdOut;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class FastCollinearPoints {
 
-  private ArrayList<LineSegment> segmentsList;
+  private final ArrayList<LineSegment> segmentsList;
 
   public FastCollinearPoints(Point[] points) {
     if (points == null) {
       throw new IllegalArgumentException();
+    }
+    for (Point p : points) {
+      if (p == null) {
+        throw new IllegalArgumentException();
+      }
+    }
+    for (int i = 0; i < points.length; i++) {
+      for (int j = i + 1; j < points.length; j++) {
+        if (i != j && points[j].compareTo(points[i]) == 0) {
+          throw new IllegalArgumentException();
+        }
+      }
     }
     segmentsList = new ArrayList<>();
     Point[] pointsClone = Arrays.copyOf(points, points.length);
     for (int i = 0; i < points.length; i++) {
       int start = 0;
       int end = start;
-      if (points[i] == null) {
-        throw new IllegalArgumentException();
-      }
-      for (int j = 0; j < points.length; j++) {
-        if (j != i && points[i].compareTo(points[j]) == 0) {
-          throw new IllegalArgumentException();
-        }
-      }
+
       Arrays.sort(pointsClone);
       Arrays.sort(pointsClone, points[i].slopeOrder());
       while (start < pointsClone.length) {
@@ -34,10 +39,12 @@ public class FastCollinearPoints {
           end++;
         }
         if (end - start >= 3) {
-          Point pMin = points[i].compareTo(pointsClone[start]) > 0 ? pointsClone[start] : points[i];
-          Point pMax = points[i].compareTo(pointsClone[start]) > 0 ? points[i] : pointsClone[end - 1];
-          if (points[i] == pMin) {
-            segmentsList.add(new LineSegment(pMin, pMax));
+          Point pointMin = points[i].compareTo(pointsClone[start])
+              > 0 ? pointsClone[start] : points[i];
+          Point pointMax = points[i].compareTo(pointsClone[start])
+              > 0 ? points[i] : pointsClone[end - 1];
+          if (points[i] == pointMin) {
+            segmentsList.add(new LineSegment(pointMin, pointMax));
           }
         }
         start = end;
