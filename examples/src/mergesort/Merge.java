@@ -1,4 +1,4 @@
-package primarysorts;
+package mergesort;
 
 public class Merge {
 
@@ -28,7 +28,7 @@ public class Merge {
   }
 
   public static void sort(Comparable[] a) {
-    aux = Comparable[a.length];
+    aux = new Comparable[a.length];
     sort(a, 0, a.length - 1);
   }
 
