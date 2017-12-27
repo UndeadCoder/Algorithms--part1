@@ -3,26 +3,19 @@ import edu.princeton.cs.algs4.StdOut;
 
 public class Board {
   private final int[] puzzle;
-  private final int[][] blocks;
   private final int D;
   private int hamming;
   private int manhattan;
 
   public Board(int[][] blocks) {
     D = blocks.length;
-    this.blocks = new int[D][D];
-    for (int i = 0; i < blocks.length; i++) {
-      for (int j = 0; j < blocks.length; j++) {
-        this.blocks[i][j] = blocks[i][j];
-      }
-    }
     puzzle = new int[D * D];
 
     hamming = 0;
     manhattan = 0;
 
-    int current = 0;
-    int goal = 0;
+    int goalRow = 0;
+    int goalCol = 0;
     int n = 0;
     int index = 0;
 
@@ -38,12 +31,13 @@ public class Board {
       }
     }
 
-    for (int i = 0; i < puzzle.length; i++) {
-      if (puzzle[i] != 0 && puzzle[i] != (i + 1)) {
-        current = i;
-        goal = puzzle[i] - 1;
-        n = (current - goal) / D;
-        manhattan += Math.abs(n + (current - n * D) - goal);
+    for (int i = 0; i < blocks.length; i++) {
+      for (int j = 0; j < blocks[0].length; j++) {
+        if (blocks[i][j] != 0 && blocks[i][j] != i * D + j + 1) {
+          goalCol = (blocks[i][j] - 1) % D;
+          goalRow = (blocks[i][j] - 1) / D;
+          manhattan += Math.abs(i - goalRow) + Math.abs(j - goalCol);
+        }
       }
     }
   }
@@ -71,39 +65,45 @@ public class Board {
   }
 
   public Board twin() {
-    int[][] block = new int[blocks.length][blocks.length];
-    for (int i = 0; i < blocks.length; i++) {
-      for (int j = 0; j < blocks[0].length; j++) {
-        block[i][j] = blocks[i][j];
+    int[] cp = new int[puzzle.length];
+    for (int i = 0; i < puzzle.length; i++) {
+      cp[i] = puzzle[i];
+    }
+    for (int i = 1; i < cp.length; i++) {
+      if (cp[i - 1] != 0 && cp[i] != 0) {
+        exch(cp, i - 1, i);
+        int [][] cpCp = expand(cp);
+        return new Board(cpCp);
       }
     }
+    int [][] cpCp = expand(cp);
+    return new Board(cpCp);
+  }
+
+
+  private void exch(int[] block, int i, int j) {
+    int temp = block[i];
+    block[i] = block[j];
+    block[j] = temp;
+  }
+
+  private void exch(int[][] block, int i1, int j1, int i2, int j2) {
+    int temp = block[i1][j1];
+    block[i1][j1] = block[i2][j2];
+    block[i2][j2] = temp;
+  }
+
+  private int[][] expand(int[] block) {
+    int[][] cp = new int[D][D];
     for (int i = 0; i < block.length; i++) {
-      for (int j = 1; j < block[i].length; i++) {
-        if (block[i][j - 1] != 0 && block[i][j] != 0) {
-          exch(block, i, j);
-          return new Board(block);
-        }
-      }
+      cp[i / D][i % D] = block[i];
     }
-    return new Board(block);
-  }
-
-
-  private void exch(int[][] block, int i, int j) {
-    int temp = block[i][j];
-    block[i][j] = block[i][j - 1];
-    block[i][j - 1] = temp;
-  }
-
-  private void exch(int[][] blocks, int i1, int j1, int i2, int j2) {
-    int temp = blocks[i1][j1];
-    blocks[i1][j1] = blocks[i2][j2];
-    blocks[i2][j2] = temp;
+    return cp;
   }
 
   @Override
   public boolean equals(Object y) {
-    if (y == null || !(y instanceof Board)) {
+    if (y == null || y.getClass() != this.getClass()) {
       return false;
     }
     Board cp = (Board) y;
@@ -123,11 +123,12 @@ public class Board {
     Stack<Board> neighbors = new Stack<>();
     int rowOfZero = 0;
     int colOfZero = 0;
+    int[][] blocks = expand(puzzle);
 
     FIND:
-    for (int i = 0; i < this.blocks.length; i++) {
-      for (int j = 0; j < this.blocks[0].length; j++) {
-        if (this.blocks[i][j] == 0) {
+    for (int i = 0; i < blocks.length; i++) {
+      for (int j = 0; j < blocks[0].length; j++) {
+        if (blocks[i][j] == 0) {
           rowOfZero = i;
           colOfZero = j;
           break FIND;
@@ -165,30 +166,31 @@ public class Board {
 
   @Override
   public String toString() {
-    StringBuffer board = new StringBuffer(D + "\n");
+    StringBuilder s = new StringBuilder();
+    s.append(D + "\n");
     for (int i = 0; i < puzzle.length; i++) {
-      board.append(" " + puzzle[i] + " ");
+      s.append(" " + puzzle[i] + " ");
       if ((i + 1) % D == 0) {
-        board.append("\n");
+        s.append("\n");
       }
     }
-    return board.toString();
+    return s.toString();
   }
 
   public static void main(String[] args) {
-    int[][] puzzle = {{1, 2, 3}, {4, 5, 6}, {7, 8, 0}};
+    int[][] puzzle = {{5, 15, 11, 8}, {0, 9, 12, 1}, {4, 7, 13, 14}, {3, 6, 10, 2}};
     Board board = new Board(puzzle);
-    StdOut.println(board.dimension());
-    StdOut.println(board.hamming());
+//    StdOut.println(board.dimension());
+//    StdOut.println(board.hamming());
     StdOut.println(board.manhattan());
-    StdOut.println(board.isGoal());
-    StdOut.println(board);
-    StdOut.println(board.twin());
-    StdOut.println(board);
-    Board board1 = new Board(puzzle);
-    Board board2 = new Board(puzzle);
-    StdOut.println(board1);
-    boolean n = board.equals(board2);
-    StdOut.println(n);
+//    StdOut.println(board.isGoal());
+//    StdOut.println(board);
+//    StdOut.println(board.twin());
+//    StdOut.println(board);
+//    Board board1 = new Board(puzzle);
+//    Board board2 = new Board(puzzle);
+//    StdOut.println(board1);
+//    boolean n = board.equals(board2);
+//    StdOut.println(n);
   }
 }
